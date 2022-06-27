@@ -6,9 +6,6 @@ MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ApuestasDepor.DOMAIN", "Apuestas.DOMAIN\ApuestasDepor.DOMAIN.csproj", "{5D654928-6983-4567-B7D3-3273834109BB}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ApuestasDepor.API", "Apuestas.API\ApuestasDepor.API.csproj", "{1837B32B-3893-47CB-9F13-5C3AE19F8D63}"
-	ProjectSection(ProjectDependencies) = postProject
-		{5D654928-6983-4567-B7D3-3273834109BB} = {5D654928-6983-4567-B7D3-3273834109BB}
-	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
