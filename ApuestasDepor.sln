@@ -1,0 +1,34 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.1.32328.378
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ApuestasDepor.DOMAIN", "Apuestas.DOMAIN\ApuestasDepor.DOMAIN.csproj", "{5D654928-6983-4567-B7D3-3273834109BB}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ApuestasDepor.API", "Apuestas.API\ApuestasDepor.API.csproj", "{1837B32B-3893-47CB-9F13-5C3AE19F8D63}"
+	ProjectSection(ProjectDependencies) = postProject
+		{5D654928-6983-4567-B7D3-3273834109BB} = {5D654928-6983-4567-B7D3-3273834109BB}
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{5D654928-6983-4567-B7D3-3273834109BB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5D654928-6983-4567-B7D3-3273834109BB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5D654928-6983-4567-B7D3-3273834109BB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5D654928-6983-4567-B7D3-3273834109BB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1837B32B-3893-47CB-9F13-5C3AE19F8D63}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1837B32B-3893-47CB-9F13-5C3AE19F8D63}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1837B32B-3893-47CB-9F13-5C3AE19F8D63}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1837B32B-3893-47CB-9F13-5C3AE19F8D63}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {F0BF5A11-5FF1-4C9B-81FA-904E865513BE}
+	EndGlobalSection
+EndGlobal
