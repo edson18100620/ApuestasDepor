@@ -1,5 +1,7 @@
-﻿using ApuestasDepor.DOMAIN.Core.Entities;
+﻿using ApuestasDepor.DOMAIN.Core.DTOs;
+using ApuestasDepor.DOMAIN.Core.Entities;
 using ApuestasDepor.DOMAIN.Core.Interface;
+using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ApuestasDepor.API.Controllers
@@ -9,16 +11,20 @@ namespace ApuestasDepor.API.Controllers
     public class ApuestaController : ControllerBase
     {
         private readonly IApuestaRepository _apuestaRepository;
+        private readonly IMapper _mapper;
 
-        public ApuestaController(IApuestaRepository apuestaRepository)
+        public ApuestaController(IApuestaRepository apuestaRepository, IMapper mapper)
         {
             _apuestaRepository = apuestaRepository;
+            _mapper = mapper;
         }
+
         [HttpGet("GetAll")]
         public async Task<IActionResult> GetAll()
         {
             var apuestas = await _apuestaRepository.GetApuestas();
-            return Ok(apuestas);
+            var apuestasList = _mapper.Map<List<ApuestaDTO>>(apuestas);
+            return Ok(apuestasList);
         }
 
         [HttpGet("GetById")]
@@ -29,15 +35,19 @@ namespace ApuestasDepor.API.Controllers
         }
 
         [HttpPost("Create")]
-        public async Task<IActionResult> Create([FromBody] Apuesta apuesta)
+        public async Task<IActionResult> Create([FromBody] ApuestaPostDTO apuestaDTO)
         {
-            await _apuestaRepository.Insert(apuesta);
-            return Ok(apuesta.Id);
+            var apuestas = _mapper.Map<Apuesta>(apuestaDTO);
+            await _apuestaRepository.Insert(apuestas);
+            return Ok(apuestas.Id);
         }
         [HttpPut("Update")]
-        public async Task<IActionResult> Update([FromBody] Apuesta apuesta)
+        public async Task<IActionResult> Update([FromBody] ApuestaDTO apuestaDTO)
         {
-            bool result = await _apuestaRepository.Update(apuesta);
+            if (apuestaDTO.Id == 0)
+                return NotFound();
+            var apuesta = _mapper.Map<Apuesta>(apuestaDTO);
+            var result = await _apuestaRepository.Update(apuesta);
             if (!result)
                 return BadRequest();
             return Ok(apuesta.Id);
@@ -48,7 +58,7 @@ namespace ApuestasDepor.API.Controllers
             bool result = await _apuestaRepository.Delete(id);
             if (!result)
                 return BadRequest();
-            return Ok(id);
+            return NoContent();
         }
 
     }

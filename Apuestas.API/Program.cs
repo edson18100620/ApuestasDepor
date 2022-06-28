@@ -1,6 +1,8 @@
 using ApuestasDepor.DOMAIN.Core.Interface;
 using ApuestasDepor.DOMAIN.Infrastructure.Data;
+using ApuestasDepor.DOMAIN.Infrastructure.Mapping;
 using ApuestasDepor.DOMAIN.Infrastructure.Repositories;
+using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -8,6 +10,15 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 var connectionString = builder.Configuration.GetConnectionString("DevConnection");
 builder.Services.AddDbContext<ApuestasV2Context>(options => options.UseSqlServer(connectionString));
+
+// Add Automapper Services
+var config = new MapperConfiguration(cfg =>
+{
+    cfg.AddProfile(new AutomapperProfile());
+});
+var mapper = config.CreateMapper();
+builder.Services.AddSingleton(mapper);
+
 
 builder.Services.AddTransient<IApuestaRepository, ApuestaRepository>();
 builder.Services.AddTransient<IAudioVisualRepository, AudioVisualRepository>();
