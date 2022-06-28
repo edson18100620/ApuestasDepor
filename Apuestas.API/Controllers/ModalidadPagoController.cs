@@ -1,5 +1,7 @@
-﻿using ApuestasDepor.DOMAIN.Core.Entities;
+﻿using ApuestasDepor.DOMAIN.Core.DTOs;
+using ApuestasDepor.DOMAIN.Core.Entities;
 using ApuestasDepor.DOMAIN.Core.Interface;
+using AutoMapper;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -10,15 +12,18 @@ namespace ApuestasDepor.API.Controllers
     public class ModalidadPagoController : ControllerBase
     {
         private readonly IModalidadPagoRepository _modalidadPagoRepository;
-        public ModalidadPagoController(IModalidadPagoRepository modalidadPagoRepository)
+        private readonly IMapper _mapper;
+        public ModalidadPagoController(IModalidadPagoRepository modalidadPagoRepository, IMapper mapper)
         {
             _modalidadPagoRepository = modalidadPagoRepository;
+            _mapper = mapper;
         }
         [HttpGet("GetAll")]
         public async Task<IActionResult> GetAll()
         {
             var modalidadPago = await _modalidadPagoRepository.GetModalidadPago();
-            return Ok(modalidadPago);
+            var modalidadPagoList = _mapper.Map<List<ModalidadPagoDTO>>(modalidadPago);
+            return Ok(modalidadPagoList);
         }
         [HttpGet("GetById")]
         public async Task<IActionResult> GetById([FromQuery] int id)
@@ -27,15 +32,19 @@ namespace ApuestasDepor.API.Controllers
             return Ok(modalidadPago);
         }
         [HttpPost("Create")]
-        public async Task<IActionResult> Create([FromBody] ModalidadPago modalidadPago)
+        public async Task<IActionResult> Create([FromBody] ModalidadPagoPostDTO modalidadPagoDTO)
         {
+            var modalidadPago = _mapper.Map<ModalidadPago>(modalidadPagoDTO);
             await _modalidadPagoRepository.Insert(modalidadPago);
-            return Ok(modalidadPago);
+            return Ok(modalidadPago.Id);
         }
         [HttpPut("Update")]
-        public async Task<IActionResult> Update([FromBody] ModalidadPago modalidadPago)
+        public async Task<IActionResult> Update([FromBody] ModalidadPagoDTO modalidadPagoDTO)
         {
-            bool result = await _modalidadPagoRepository.Update(modalidadPago);
+            if (modalidadPagoDTO.Id == 0)
+                return NotFound();
+            var modalidadPago = _mapper.Map<ModalidadPago>(modalidadPagoDTO);
+            var result = await _modalidadPagoRepository.Update(modalidadPago);
             if (!result)
                 return BadRequest();
             return Ok(modalidadPago.Id);
@@ -46,7 +55,7 @@ namespace ApuestasDepor.API.Controllers
             bool result = await _modalidadPagoRepository.Delete(id);
             if (!result)
                 return BadRequest();
-            return Ok(id);
+            return NoContent(); ;
         }
     }
 }

@@ -1,7 +1,9 @@
 ﻿using ApuestasDepor.DOMAIN.Core.Entities;
-using ApuestasDepor.DOMAIN.Infrastructure.Data;
+using ApuestasDepor.DOMAIN.Core.Interface;
+using AutoMapper;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
+using ApuestasDepor.DOMAIN.Core.DTOs;
 
 namespace Apuestas.API.Controllers
 {
@@ -9,125 +11,51 @@ namespace Apuestas.API.Controllers
     [ApiController]
     public class UsuarioController : ControllerBase
     {
-        private readonly ApuestasV2Context _context;
-
-        public UsuarioController(ApuestasV2Context context)
+        private readonly IUsuarioRepository _usuarioRepository;
+        private readonly IMapper _mapper;
+        public UsuarioController(IUsuarioRepository usuarioRepository, IMapper mapper)
         {
-            _context = context;
+            _usuarioRepository = usuarioRepository;
+            _mapper = mapper;
         }
-
-        // GET: api/Usuario
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<Usuario>>> GetUsuario()
+        [HttpGet("GetAll")]
+        public async Task<IActionResult> GetAll()
         {
-          if (_context.Usuario == null)
-          {
-              return NotFound();
-          }
-            return await _context.Usuario.ToListAsync();
+            var usuario = await _usuarioRepository.GetUsuario();
+            var usuarioList = _mapper.Map<List<UsuarioDTO>>(usuario);
+            return Ok(usuarioList);
         }
-
-        // GET: api/Usuario/5
-        [HttpGet("{id}")]
-        public async Task<ActionResult<Usuario>> GetUsuario(int id)
+        [HttpGet("GetById")]
+        public async Task<IActionResult> GetById([FromQuery] int id)
         {
-          if (_context.Usuario == null)
-          {
-              return NotFound();
-          }
-            var usuario = await _context.Usuario.FindAsync(id);
-
-            if (usuario == null)
-            {
+            var usuario = await _usuarioRepository.GetUsuarioById(id);
+            return Ok(usuario);
+        }
+        [HttpPost("Create")]
+        public async Task<IActionResult> Create([FromBody] UsuarioPostDTO usuarioDTO)
+        {
+            var usuario = _mapper.Map<Usuario>(usuarioDTO);
+            await _usuarioRepository.Insert(usuario);
+            return Ok(usuario.Id);
+        }
+        [HttpPut("Update")]
+        public async Task<IActionResult> Update([FromBody] UsuarioDTO usuarioDTO)
+        {
+            if (usuarioDTO.Id == 0)
                 return NotFound();
-            }
-
-            return usuario;
-        }
-
-        // PUT: api/Usuario/5
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPut("{id}")]
-        public async Task<IActionResult> PutUsuario(int id, Usuario usuario)
-        {
-            if (id != usuario.Id)
-            {
+            var usuario = _mapper.Map<Usuario>(usuarioDTO);
+            var result = await _usuarioRepository.Update(usuario);
+            if (!result)
                 return BadRequest();
-            }
-
-            _context.Entry(usuario).State = EntityState.Modified;
-
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!UsuarioExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
-
+            return Ok(usuario.Id);
+        }
+        [HttpDelete("Delete")]
+        public async Task<IActionResult> DeleteById([FromQuery] int id)
+        {
+            bool result = await _usuarioRepository.Delete(id);
+            if (!result)
+                return BadRequest();
             return NoContent();
-        }
-
-        // POST: api/Usuario
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPost]
-        public async Task<ActionResult<Usuario>> PostUsuario(Usuario usuario)
-        {
-          if (_context.Usuario == null)
-          {
-              return Problem("Entity set 'ApuestasV2Context.Usuario'  is null.");
-          }
-            _context.Usuario.Add(usuario);
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateException)
-            {
-                if (UsuarioExists(usuario.Id))
-                {
-                    return Conflict();
-                }
-                else
-                {
-                    throw;
-                }
-            }
-
-            return CreatedAtAction("GetUsuario", new { id = usuario.Id }, usuario);
-        }
-
-        // DELETE: api/Usuario/5
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteUsuario(int id)
-        {
-            if (_context.Usuario == null)
-            {
-                return NotFound();
-            }
-            var usuario = await _context.Usuario.FindAsync(id);
-            if (usuario == null)
-            {
-                return NotFound();
-            }
-
-            _context.Usuario.Remove(usuario);
-            await _context.SaveChangesAsync();
-
-            return NoContent();
-        }
-
-        private bool UsuarioExists(int id)
-        {
-            return (_context.Usuario?.Any(e => e.Id == id)).GetValueOrDefault();
         }
     }
 }

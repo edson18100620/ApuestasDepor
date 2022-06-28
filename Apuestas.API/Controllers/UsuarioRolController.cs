@@ -1,7 +1,9 @@
 ﻿using ApuestasDepor.DOMAIN.Core.Entities;
-using ApuestasDepor.DOMAIN.Infrastructure.Data;
+using ApuestasDepor.DOMAIN.Core.Interface;
+using AutoMapper;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
+using ApuestasDepor.DOMAIN.Core.DTOs;
 
 namespace Apuestas.API.Controllers
 {
@@ -9,125 +11,51 @@ namespace Apuestas.API.Controllers
     [ApiController]
     public class UsuarioRolController : ControllerBase
     {
-        private readonly ApuestasV2Context _context;
-
-        public UsuarioRolController(ApuestasV2Context context)
+        private readonly IUsuarioRolRepository _usuarioRolRepository;
+        private readonly IMapper _mapper;
+        public UsuarioRolController(IUsuarioRolRepository usuarioRolRepository, IMapper mapper)
         {
-            _context = context;
+            _usuarioRolRepository = usuarioRolRepository;
+            _mapper = mapper;
         }
-
-        // GET: api/UsuarioRol
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<UsuarioRol>>> GetUsuarioRol()
+        [HttpGet("GetAll")]
+        public async Task<IActionResult> GetAll()
         {
-          if (_context.UsuarioRol == null)
-          {
-              return NotFound();
-          }
-            return await _context.UsuarioRol.ToListAsync();
+            var usuarioRol = await _usuarioRolRepository.GetUsuarioRol();
+            var usuarioRolList = _mapper.Map<List<UsuarioRolDTO>>(usuarioRol);
+            return Ok(usuarioRolList);
         }
-
-        // GET: api/UsuarioRol/5
-        [HttpGet("{id}")]
-        public async Task<ActionResult<UsuarioRol>> GetUsuarioRol(int id)
+        [HttpGet("GetById")]
+        public async Task<IActionResult> GetById([FromQuery] int id)
         {
-          if (_context.UsuarioRol == null)
-          {
-              return NotFound();
-          }
-            var usuarioRol = await _context.UsuarioRol.FindAsync(id);
-
-            if (usuarioRol == null)
-            {
+            var usuarioRol = await _usuarioRolRepository.GetUsuarioRolById(id);
+            return Ok(usuarioRol);
+        }
+        [HttpPost("Create")]
+        public async Task<IActionResult> Create([FromBody]  UsuarioRolPostDTO usuarioRolDTO)
+        {
+            var usuarioRol = _mapper.Map<UsuarioRol>(usuarioRolDTO);
+            await _usuarioRolRepository.Insert(usuarioRol);
+            return Ok(usuarioRol.Id);
+        }
+        [HttpPut("Update")]
+        public async Task<IActionResult> Update([FromBody] UsuarioRolDTO usuarioRolDTO)
+        {
+            if (usuarioRolDTO.Id == 0)
                 return NotFound();
-            }
-
-            return usuarioRol;
-        }
-
-        // PUT: api/UsuarioRol/5
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPut("{id}")]
-        public async Task<IActionResult> PutUsuarioRol(int id, UsuarioRol usuarioRol)
-        {
-            if (id != usuarioRol.Id)
-            {
+            var usuarioRol = _mapper.Map<UsuarioRol>(usuarioRolDTO);
+            var result = await _usuarioRolRepository.Update(usuarioRol);
+            if (!result)
                 return BadRequest();
-            }
-
-            _context.Entry(usuarioRol).State = EntityState.Modified;
-
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!UsuarioRolExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
-
+            return Ok(usuarioRol.Id);
+        }
+        [HttpDelete("Delete")]
+        public async Task<IActionResult> DeleteById([FromQuery] int id)
+        {
+            bool result = await _usuarioRolRepository.Delete(id);
+            if (!result)
+                return BadRequest();
             return NoContent();
-        }
-
-        // POST: api/UsuarioRol
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPost]
-        public async Task<ActionResult<UsuarioRol>> PostUsuarioRol(UsuarioRol usuarioRol)
-        {
-          if (_context.UsuarioRol == null)
-          {
-              return Problem("Entity set 'ApuestasV2Context.UsuarioRol'  is null.");
-          }
-            _context.UsuarioRol.Add(usuarioRol);
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateException)
-            {
-                if (UsuarioRolExists(usuarioRol.Id))
-                {
-                    return Conflict();
-                }
-                else
-                {
-                    throw;
-                }
-            }
-
-            return CreatedAtAction("GetUsuarioRol", new { id = usuarioRol.Id }, usuarioRol);
-        }
-
-        // DELETE: api/UsuarioRol/5
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteUsuarioRol(int id)
-        {
-            if (_context.UsuarioRol == null)
-            {
-                return NotFound();
-            }
-            var usuarioRol = await _context.UsuarioRol.FindAsync(id);
-            if (usuarioRol == null)
-            {
-                return NotFound();
-            }
-
-            _context.UsuarioRol.Remove(usuarioRol);
-            await _context.SaveChangesAsync();
-
-            return NoContent();
-        }
-
-        private bool UsuarioRolExists(int id)
-        {
-            return (_context.UsuarioRol?.Any(e => e.Id == id)).GetValueOrDefault();
         }
     }
 }

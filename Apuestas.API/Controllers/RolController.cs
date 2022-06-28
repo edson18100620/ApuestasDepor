@@ -1,7 +1,9 @@
 ﻿using ApuestasDepor.DOMAIN.Core.Entities;
-using ApuestasDepor.DOMAIN.Infrastructure.Data;
+using ApuestasDepor.DOMAIN.Core.Interface;
+using AutoMapper;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
+using ApuestasDepor.DOMAIN.Core.DTOs;
 
 namespace Apuestas.API.Controllers
 {
@@ -9,125 +11,51 @@ namespace Apuestas.API.Controllers
     [ApiController]
     public class RolController : ControllerBase
     {
-        private readonly ApuestasV2Context _context;
-
-        public RolController(ApuestasV2Context context)
+        private readonly IRolRepository _rolRepository;
+        private readonly IMapper _mapper;
+        public RolController(IRolRepository rolRepository, IMapper mapper)
         {
-            _context = context;
+            _rolRepository = rolRepository;
+            _mapper = mapper;
         }
-
-        // GET: api/Rol
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<Rol>>> GetRol()
+        [HttpGet("GetAll")]
+        public async Task<IActionResult> GetAll()
         {
-          if (_context.Rol == null)
-          {
-              return NotFound();
-          }
-            return await _context.Rol.ToListAsync();
+            var rol = await _rolRepository.GetRol();
+            var rolList = _mapper.Map<List<RolDTO>>(rol);
+            return Ok(rolList);
         }
-
-        // GET: api/Rol/5
-        [HttpGet("{id}")]
-        public async Task<ActionResult<Rol>> GetRol(int id)
+        [HttpGet("GetById")]
+        public async Task<IActionResult> GetById([FromQuery] int id)
         {
-          if (_context.Rol == null)
-          {
-              return NotFound();
-          }
-            var rol = await _context.Rol.FindAsync(id);
-
-            if (rol == null)
-            {
+            var rol = await _rolRepository.GetRolById(id);
+            return Ok(rol);
+        }
+        [HttpPost("Create")]
+        public async Task<IActionResult> Create([FromBody] RolPostDTO rolDTO)
+        {
+            var rol = _mapper.Map<Rol>(rolDTO);
+            await _rolRepository.Insert(rol);
+            return Ok(rol.Id);
+        }
+        [HttpPut("Update")]
+        public async Task<IActionResult> Update([FromBody] RolDTO rolDTO)
+        {
+            if (rolDTO.Id == 0)
                 return NotFound();
-            }
-
-            return rol;
-        }
-
-        // PUT: api/Rol/5
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPut("{id}")]
-        public async Task<IActionResult> PutRol(int id, Rol rol)
-        {
-            if (id != rol.Id)
-            {
+            var rol = _mapper.Map<Rol>(rolDTO);
+            var result = await _rolRepository.Update(rol);
+            if (!result)
                 return BadRequest();
-            }
-
-            _context.Entry(rol).State = EntityState.Modified;
-
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!RolExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
-
+            return Ok(rol.Id);
+        }
+        [HttpDelete("Delete")]
+        public async Task<IActionResult> DeleteById([FromQuery] int id)
+        {
+            bool result = await _rolRepository.Delete(id);
+            if (!result)
+                return BadRequest();
             return NoContent();
-        }
-
-        // POST: api/Rol
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPost]
-        public async Task<ActionResult<Rol>> PostRol(Rol rol)
-        {
-          if (_context.Rol == null)
-          {
-              return Problem("Entity set 'ApuestasV2Context.Rol'  is null.");
-          }
-            _context.Rol.Add(rol);
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateException)
-            {
-                if (RolExists(rol.Id))
-                {
-                    return Conflict();
-                }
-                else
-                {
-                    throw;
-                }
-            }
-
-            return CreatedAtAction("GetRol", new { id = rol.Id }, rol);
-        }
-
-        // DELETE: api/Rol/5
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteRol(int id)
-        {
-            if (_context.Rol == null)
-            {
-                return NotFound();
-            }
-            var rol = await _context.Rol.FindAsync(id);
-            if (rol == null)
-            {
-                return NotFound();
-            }
-
-            _context.Rol.Remove(rol);
-            await _context.SaveChangesAsync();
-
-            return NoContent();
-        }
-
-        private bool RolExists(int id)
-        {
-            return (_context.Rol?.Any(e => e.Id == id)).GetValueOrDefault();
         }
     }
 }

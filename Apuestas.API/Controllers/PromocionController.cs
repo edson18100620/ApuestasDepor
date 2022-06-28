@@ -1,7 +1,9 @@
 ﻿using ApuestasDepor.DOMAIN.Core.Entities;
-using ApuestasDepor.DOMAIN.Infrastructure.Data;
+using ApuestasDepor.DOMAIN.Core.Interface;
+using AutoMapper;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
+using ApuestasDepor.DOMAIN.Core.DTOs;
 
 namespace Apuestas.API.Controllers
 {
@@ -9,125 +11,51 @@ namespace Apuestas.API.Controllers
     [ApiController]
     public class PromocionController : ControllerBase
     {
-        private readonly ApuestasV2Context _context;
-
-        public PromocionController(ApuestasV2Context context)
+        private readonly IPromocionRepository _promocionRepository;
+        private readonly IMapper _mapper;
+        public PromocionController(IPromocionRepository promocionRepository, IMapper mapper)
         {
-            _context = context;
+            _promocionRepository = promocionRepository;
+            _mapper = mapper;
         }
-
-        // GET: api/Promocion
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<Promocion>>> GetPromocion()
+        [HttpGet("GetAll")]
+        public async Task<IActionResult> GetAll()
         {
-          if (_context.Promocion == null)
-          {
-              return NotFound();
-          }
-            return await _context.Promocion.ToListAsync();
+            var promocion = await _promocionRepository.GetPromocion();
+            var promocionList = _mapper.Map<List<PromocionDTO>>(promocion);
+            return Ok(promocionList);
         }
-
-        // GET: api/Promocion/5
-        [HttpGet("{id}")]
-        public async Task<ActionResult<Promocion>> GetPromocion(int id)
+        [HttpGet("GetById")]
+        public async Task<IActionResult> GetById([FromQuery] int id)
         {
-          if (_context.Promocion == null)
-          {
-              return NotFound();
-          }
-            var promocion = await _context.Promocion.FindAsync(id);
-
-            if (promocion == null)
-            {
+            var promocion = await _promocionRepository.GetPromocionById(id);
+            return Ok(promocion);
+        }
+        [HttpPost("Create")]
+        public async Task<IActionResult> Create([FromBody] PromocionPostDTO promocionDTO)
+        {
+            var promocion = _mapper.Map<Promocion>(promocionDTO);
+            await _promocionRepository.Insert(promocion);
+            return Ok(promocion.Id);
+        }
+        [HttpPut("Update")]
+        public async Task<IActionResult> Update([FromBody] PromocionDTO promocionDTO)
+        {
+            if (promocionDTO.Id == 0)
                 return NotFound();
-            }
-
-            return promocion;
-        }
-
-        // PUT: api/Promocion/5
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPut("{id}")]
-        public async Task<IActionResult> PutPromocion(int id, Promocion promocion)
-        {
-            if (id != promocion.Id)
-            {
+            var promocion = _mapper.Map<Promocion>(promocionDTO);
+            var result = await _promocionRepository.Update(promocion);
+            if (!result)
                 return BadRequest();
-            }
-
-            _context.Entry(promocion).State = EntityState.Modified;
-
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!PromocionExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
-
+            return Ok(promocion.Id);
+        }
+        [HttpDelete("Delete")]
+        public async Task<IActionResult> DeleteById([FromQuery] int id)
+        {
+            bool result = await _promocionRepository.Delete(id);
+            if (!result)
+                return BadRequest();
             return NoContent();
-        }
-
-        // POST: api/Promocion
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPost]
-        public async Task<ActionResult<Promocion>> PostPromocion(Promocion promocion)
-        {
-          if (_context.Promocion == null)
-          {
-              return Problem("Entity set 'ApuestasV2Context.Promocion'  is null.");
-          }
-            _context.Promocion.Add(promocion);
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateException)
-            {
-                if (PromocionExists(promocion.Id))
-                {
-                    return Conflict();
-                }
-                else
-                {
-                    throw;
-                }
-            }
-
-            return CreatedAtAction("GetPromocion", new { id = promocion.Id }, promocion);
-        }
-
-        // DELETE: api/Promocion/5
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeletePromocion(int id)
-        {
-            if (_context.Promocion == null)
-            {
-                return NotFound();
-            }
-            var promocion = await _context.Promocion.FindAsync(id);
-            if (promocion == null)
-            {
-                return NotFound();
-            }
-
-            _context.Promocion.Remove(promocion);
-            await _context.SaveChangesAsync();
-
-            return NoContent();
-        }
-
-        private bool PromocionExists(int id)
-        {
-            return (_context.Promocion?.Any(e => e.Id == id)).GetValueOrDefault();
         }
     }
 }

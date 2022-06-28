@@ -1,5 +1,7 @@
-﻿using ApuestasDepor.DOMAIN.Core.Entities;
+﻿using ApuestasDepor.DOMAIN.Core.DTOs;
+using ApuestasDepor.DOMAIN.Core.Entities;
 using ApuestasDepor.DOMAIN.Core.Interface;
+using AutoMapper;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -10,15 +12,18 @@ namespace ApuestasDepor.API.Controllers
     public class EquipoController : ControllerBase
     {
         private readonly IEquiposRepository _equiposRepository;
-        public EquipoController(IEquiposRepository equipoRepository)
+        private readonly IMapper _mapper;
+        public EquipoController(IEquiposRepository equipoRepository, IMapper mapper)
         {
             _equiposRepository = equipoRepository;
+            _mapper = mapper;
         }
         [HttpGet("GetAll")]
         public async Task<IActionResult> GetAll()
         {
             var equipos = await _equiposRepository.GetEquipos();
-            return Ok(equipos);
+            var equiposList = _mapper.Map<List<EquiposDTO>>(equipos);
+            return Ok(equiposList);
         }
         [HttpGet("GetById")]
         public async Task<IActionResult> GetById([FromQuery] int id)
@@ -27,15 +32,19 @@ namespace ApuestasDepor.API.Controllers
             return Ok(equipos);
         }
         [HttpPost("Create")]
-        public async Task<IActionResult> Create([FromBody] Equipos equipos)
+        public async Task<IActionResult> Create([FromBody] EquiposPostDTO equiposDTO)
         {
+            var equipos = _mapper.Map<Equipos>(equiposDTO);
             await _equiposRepository.Insert(equipos);
-            return Ok(equipos);
+            return Ok(equipos.Id);
         }
         [HttpPut("Update")]
-        public async Task<IActionResult> Update([FromBody] Equipos equipos)
+        public async Task<IActionResult> Update([FromBody] EquiposDTO equiposDTO)
         {
-            bool result = await _equiposRepository.Update(equipos);
+            if (equiposDTO.Id == 0)
+                return NotFound();
+            var equipos = _mapper.Map<Equipos>(equiposDTO);
+            var result = await _equiposRepository.Update(equipos);
             if (!result)
                 return BadRequest();
             return Ok(equipos.Id);
@@ -46,7 +55,7 @@ namespace ApuestasDepor.API.Controllers
             bool result = await _equiposRepository.Delete(id);
             if (!result)
                 return BadRequest();
-            return Ok(id);
+            return NoContent();
         }
     }
 }

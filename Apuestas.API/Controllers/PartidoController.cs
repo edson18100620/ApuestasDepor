@@ -1,7 +1,9 @@
 ﻿using ApuestasDepor.DOMAIN.Core.Entities;
-using ApuestasDepor.DOMAIN.Infrastructure.Data;
+using ApuestasDepor.DOMAIN.Core.Interface;
+using AutoMapper;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
+using ApuestasDepor.DOMAIN.Core.DTOs;
 
 namespace Apuestas.API.Controllers
 {
@@ -9,125 +11,51 @@ namespace Apuestas.API.Controllers
     [ApiController]
     public class PartidoController : ControllerBase
     {
-        private readonly ApuestasV2Context _context;
-
-        public PartidoController(ApuestasV2Context context)
+        private readonly IPartidoRepository _partidoRepository;
+        private readonly IMapper _mapper;
+        public PartidoController(IPartidoRepository partidoRepository, IMapper mapper)
         {
-            _context = context;
+            _partidoRepository = partidoRepository;
+            _mapper = mapper;
         }
-
-        // GET: api/Partido
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<Partido>>> GetPartido()
+        [HttpGet("GetAll")]
+        public async Task<IActionResult> GetAll()
         {
-          if (_context.Partido == null)
-          {
-              return NotFound();
-          }
-            return await _context.Partido.ToListAsync();
+            var partido = await _partidoRepository.GetPartidos();
+            var partidoList = _mapper.Map<List<PartidoDTO>>(partido);
+            return Ok(partidoList);
         }
-
-        // GET: api/Partido/5
-        [HttpGet("{id}")]
-        public async Task<ActionResult<Partido>> GetPartido(int id)
+        [HttpGet("GetById")]
+        public async Task<IActionResult> GetById([FromQuery] int id)
         {
-          if (_context.Partido == null)
-          {
-              return NotFound();
-          }
-            var partido = await _context.Partido.FindAsync(id);
-
-            if (partido == null)
-            {
+            var partido = await _partidoRepository.GetPartidoById(id);
+            return Ok(partido);
+        }
+        [HttpPost("Create")]
+        public async Task<IActionResult> Create([FromBody] PartidoPostDTO partidoDTO)
+        {
+            var partido = _mapper.Map<Partido>(partidoDTO);
+            await _partidoRepository.Insert(partido);
+            return Ok(partido.Id);
+        }
+        [HttpPut("Update")]
+        public async Task<IActionResult> Update([FromBody] PartidoDTO partidoDTO)
+        {
+            if (partidoDTO.Id == 0)
                 return NotFound();
-            }
-
-            return partido;
-        }
-
-        // PUT: api/Partido/5
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPut("{id}")]
-        public async Task<IActionResult> PutPartido(int id, Partido partido)
-        {
-            if (id != partido.Id)
-            {
+            var audioVisual = _mapper.Map<Partido>(partidoDTO);
+            var result = await _partidoRepository.Update(audioVisual);
+            if (!result)
                 return BadRequest();
-            }
-
-            _context.Entry(partido).State = EntityState.Modified;
-
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!PartidoExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
-
+            return Ok(audioVisual.Id);
+        }
+        [HttpDelete("Delete")]
+        public async Task<IActionResult> DeleteById([FromQuery] int id)
+        {
+            bool result = await _partidoRepository.Delete(id);
+            if (!result)
+                return BadRequest();
             return NoContent();
-        }
-
-        // POST: api/Partido
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPost]
-        public async Task<ActionResult<Partido>> PostPartido(Partido partido)
-        {
-          if (_context.Partido == null)
-          {
-              return Problem("Entity set 'ApuestasV2Context.Partido'  is null.");
-          }
-            _context.Partido.Add(partido);
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateException)
-            {
-                if (PartidoExists(partido.Id))
-                {
-                    return Conflict();
-                }
-                else
-                {
-                    throw;
-                }
-            }
-
-            return CreatedAtAction("GetPartido", new { id = partido.Id }, partido);
-        }
-
-        // DELETE: api/Partido/5
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeletePartido(int id)
-        {
-            if (_context.Partido == null)
-            {
-                return NotFound();
-            }
-            var partido = await _context.Partido.FindAsync(id);
-            if (partido == null)
-            {
-                return NotFound();
-            }
-
-            _context.Partido.Remove(partido);
-            await _context.SaveChangesAsync();
-
-            return NoContent();
-        }
-
-        private bool PartidoExists(int id)
-        {
-            return (_context.Partido?.Any(e => e.Id == id)).GetValueOrDefault();
         }
     }
 }
