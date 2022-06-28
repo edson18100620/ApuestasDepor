@@ -1,12 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
+﻿using ApuestasDepor.DOMAIN.Core.Entities;
+using ApuestasDepor.DOMAIN.Infrastructure.Data;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Apuestas.DOMAIN.Core.Entities;
-using Apuestas.DOMAIN.Infrastructure.Data;
 
 namespace Apuestas.API.Controllers
 {

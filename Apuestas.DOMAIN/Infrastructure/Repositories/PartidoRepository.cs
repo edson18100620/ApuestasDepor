@@ -1,14 +1,9 @@
-﻿using Apuestas.DOMAIN.Core.Entities;
-using Apuestas.DOMAIN.Core.Interface;
-using Apuestas.DOMAIN.Infrastructure.Data;
+﻿using ApuestasDepor.DOMAIN.Core.Entities;
+using ApuestasDepor.DOMAIN.Core.Interface;
+using ApuestasDepor.DOMAIN.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace Apuestas.DOMAIN.Infrastructure.Repositories
+namespace ApuestasDepor.DOMAIN.Infrastructure.Repositories
 {
 
     public class PartidoRepository : IPartidoRepository

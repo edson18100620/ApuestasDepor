@@ -1,6 +1,6 @@
 ﻿using ApuestasDepor.DOMAIN.Core.Entities;
 
-namespace Apuestas.DOMAIN.Core.Interface
+namespace ApuestasDepor.DOMAIN.Core.Interface
 {
     public interface IPartidoRepository
     {
