@@ -16,6 +16,10 @@ builder.Services.AddTransient<IEquiposRepository, EquiposRepository>();
 builder.Services.AddTransient<IModalidadPagoRepository, ModalidadPagoRepository>();
 builder.Services.AddTransient<IPaisRepository, PaisRepository>();
 builder.Services.AddTransient<IPartidoRepository, PartidoRepository>();
+builder.Services.AddTransient<IPromocionRepository, PromocionRepository>();
+builder.Services.AddTransient<IRolRepository, RolRepository>();
+builder.Services.AddTransient<IUsuarioRepository, UsuarioRepository>();
+builder.Services.AddTransient<IUsuarioRolRepository, UsuarioRolRepository>();
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
