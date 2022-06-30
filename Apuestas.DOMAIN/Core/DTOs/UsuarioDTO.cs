@@ -32,5 +32,7 @@ namespace ApuestasDepor.DOMAIN.Core.DTOs
         public string? Genero { get; set; }
         public string? NumeroDocumento { get; set; }
         public string? Correo { get; set; }
+        public int? RolId { get; set; }
+        public string? Clave { get; set; }
     }
 }

@@ -29,7 +29,7 @@ namespace ApuestasDepor.DOMAIN.Infrastructure.Data
         public virtual DbSet<Promocion> Promocion { get; set; } = null!;
         public virtual DbSet<Rol> Rol { get; set; } = null!;
         public virtual DbSet<Usuario> Usuario { get; set; } = null!;
-        public virtual DbSet<UsuarioRol> UsuarioRol { get; set; } = null!;
+        //public virtual DbSet<UsuarioRol> UsuarioRol { get; set; } = null!;
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -159,7 +159,7 @@ namespace ApuestasDepor.DOMAIN.Infrastructure.Data
 
             modelBuilder.Entity<Problemas>(entity =>
             {
-                entity.Property(e => e.Id).ValueGeneratedNever();
+                //entity.Property(e => e.Id).ValueGeneratedNever();
 
                 entity.Property(e => e.Detalle)
                     .HasMaxLength(60)
@@ -207,7 +207,7 @@ namespace ApuestasDepor.DOMAIN.Infrastructure.Data
 
             modelBuilder.Entity<Rol>(entity =>
             {
-                entity.Property(e => e.Id).ValueGeneratedNever();
+                //entity.Property(e => e.Id).ValueGeneratedNever();
 
                 entity.Property(e => e.Descripcion)
                     .HasMaxLength(50)
@@ -216,7 +216,7 @@ namespace ApuestasDepor.DOMAIN.Infrastructure.Data
 
             modelBuilder.Entity<Usuario>(entity =>
             {
-                entity.Property(e => e.Id).ValueGeneratedNever();
+                //entity.Property(e => e.Id).ValueGeneratedNever();
 
                 entity.Property(e => e.Correo)
                     .HasMaxLength(50)
@@ -256,22 +256,27 @@ namespace ApuestasDepor.DOMAIN.Infrastructure.Data
                     .WithMany(p => p.Usuario)
                     .HasForeignKey(d => d.PaisId)
                     .HasConstraintName("FK_Usuario_Pais");
-            });
-
-            modelBuilder.Entity<UsuarioRol>(entity =>
-            {
-                entity.Property(e => e.Id).ValueGeneratedNever();
 
                 entity.HasOne(d => d.Rol)
-                    .WithMany(p => p.UsuarioRol)
+                    .WithMany(p => p.Usuario)
                     .HasForeignKey(d => d.RolId)
-                    .HasConstraintName("FK_UsuarioRol_Rol");
-
-                entity.HasOne(d => d.Usuario)
-                    .WithMany(p => p.UsuarioRol)
-                    .HasForeignKey(d => d.UsuarioId)
-                    .HasConstraintName("FK_UsuarioRol_Usuario");
+                    .HasConstraintName("FK_Usuario_Rol");                
             });
+
+            //modelBuilder.Entity<UsuarioRol>(entity =>
+            //{
+            //    entity.Property(e => e.Id).ValueGeneratedNever();
+
+            //    entity.HasOne(d => d.Rol)
+            //        .WithMany(p => p.UsuarioRol)
+            //        .HasForeignKey(d => d.RolId)
+            //        .HasConstraintName("FK_UsuarioRol_Rol");
+
+            //    entity.HasOne(d => d.Usuario)
+            //        .WithMany(p => p.UsuarioRol)
+            //        .HasForeignKey(d => d.UsuarioId)
+            //        .HasConstraintName("FK_UsuarioRol_Usuario");
+            //});
 
             OnModelCreatingPartial(modelBuilder);
         }

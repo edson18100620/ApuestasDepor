@@ -10,7 +10,7 @@ namespace ApuestasDepor.DOMAIN.Core.Entities
         {
             Apuesta = new HashSet<Apuesta>();
             Promocion = new HashSet<Promocion>();
-            UsuarioRol = new HashSet<UsuarioRol>();
+            //UsuarioRol = new HashSet<UsuarioRol>();
         }
 
         public int Id { get; set; }
@@ -24,10 +24,13 @@ namespace ApuestasDepor.DOMAIN.Core.Entities
         public string? Genero { get; set; }
         public string? NumeroDocumento { get; set; }
         public string? Correo { get; set; }
+        public int? RolId { get; set; }
+        public string? Clave { get; set; }
 
         public virtual Pais? Pais { get; set; }
         public virtual ICollection<Apuesta> Apuesta { get; set; }
         public virtual ICollection<Promocion> Promocion { get; set; }
-        public virtual ICollection<UsuarioRol> UsuarioRol { get; set; }
+        //public virtual ICollection<UsuarioRol> UsuarioRol { get; set; }
+        public virtual Rol Rol { get; set; }
     }
 }

@@ -34,6 +34,7 @@ namespace Apuestas.API.Controllers
         [HttpPost("Create")]
         public async Task<IActionResult> Create([FromBody] UsuarioPostDTO usuarioDTO)
         {
+            usuarioDTO.RolId = 4;
             var usuario = _mapper.Map<Usuario>(usuarioDTO);
             await _usuarioRepository.Insert(usuario);
             return Ok(usuario.Id);
