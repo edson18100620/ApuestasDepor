@@ -1,9 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using ApuestasDepor.DOMAIN.Core.Entities;
-using ApuestasDepor.DOMAIN.Core.Entities;
+﻿using ApuestasDepor.DOMAIN.Core.Entities;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata;
 
 namespace ApuestasDepor.DOMAIN.Infrastructure.Data
 {
@@ -44,7 +40,7 @@ namespace ApuestasDepor.DOMAIN.Infrastructure.Data
         {
             modelBuilder.Entity<Apuesta>(entity =>
             {
-                entity.Property(e => e.Id).ValueGeneratedNever();
+                //entity.Property(e => e.Id).ValueGeneratedNever();
 
                 entity.Property(e => e.Detalle)
                     .HasMaxLength(50)
@@ -77,7 +73,7 @@ namespace ApuestasDepor.DOMAIN.Infrastructure.Data
 
             modelBuilder.Entity<AudioVisual>(entity =>
             {
-                entity.Property(e => e.Id).ValueGeneratedNever();
+                //entity.Property(e => e.Id).ValueGeneratedNever();
 
                 entity.Property(e => e.Descripcion)
                     .HasMaxLength(60)
@@ -90,7 +86,7 @@ namespace ApuestasDepor.DOMAIN.Infrastructure.Data
 
             modelBuilder.Entity<Categoria>(entity =>
             {
-                entity.Property(e => e.Id).ValueGeneratedNever();
+                //entity.Property(e => e.Id).ValueGeneratedNever();
 
                 entity.Property(e => e.Descripcion)
                     .HasMaxLength(50)
@@ -99,7 +95,7 @@ namespace ApuestasDepor.DOMAIN.Infrastructure.Data
 
             modelBuilder.Entity<Equipos>(entity =>
             {
-                entity.Property(e => e.Id).ValueGeneratedNever();
+                //entity.Property(e => e.Id).ValueGeneratedNever();
 
                 entity.Property(e => e.Nombre)
                     .HasMaxLength(50)
@@ -113,7 +109,7 @@ namespace ApuestasDepor.DOMAIN.Infrastructure.Data
 
             modelBuilder.Entity<ModalidadPago>(entity =>
             {
-                entity.Property(e => e.Id).ValueGeneratedNever();
+                //entity.Property(e => e.Id).ValueGeneratedNever();
 
                 entity.Property(e => e.Detalle)
                     .HasMaxLength(50)
@@ -122,7 +118,7 @@ namespace ApuestasDepor.DOMAIN.Infrastructure.Data
 
             modelBuilder.Entity<Pais>(entity =>
             {
-                entity.Property(e => e.Id).ValueGeneratedNever();
+                //entity.Property(e => e.Id).ValueGeneratedNever();
 
                 entity.Property(e => e.Nombre)
                     .HasMaxLength(50)
@@ -131,7 +127,7 @@ namespace ApuestasDepor.DOMAIN.Infrastructure.Data
 
             modelBuilder.Entity<Partido>(entity =>
             {
-                entity.Property(e => e.Id).ValueGeneratedNever();
+                //entity.Property(e => e.Id).ValueGeneratedNever();
 
                 entity.Property(e => e.CuotaLoc).HasColumnName("Cuota_Loc");
 
@@ -180,7 +176,7 @@ namespace ApuestasDepor.DOMAIN.Infrastructure.Data
 
             modelBuilder.Entity<Promocion>(entity =>
             {
-                entity.Property(e => e.Id).ValueGeneratedNever();
+                //entity.Property(e => e.Id).ValueGeneratedNever();
 
                 entity.Property(e => e.Detalle)
                     .HasMaxLength(30)
