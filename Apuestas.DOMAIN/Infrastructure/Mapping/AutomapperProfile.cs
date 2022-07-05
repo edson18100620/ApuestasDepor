@@ -68,10 +68,10 @@ namespace ApuestasDepor.DOMAIN.Infrastructure.Mapping
             CreateMap<Usuario, UsuarioPostDTO>();
             CreateMap<UsuarioPostDTO, Usuario>();
 
-            CreateMap<UsuarioRol, UsuarioRolDTO>();
-            CreateMap<UsuarioRolDTO, UsuarioRol>();
-            CreateMap<UsuarioRol, UsuarioRolPostDTO>();
-            CreateMap<UsuarioRolPostDTO, UsuarioRol>();
+            //CreateMap<UsuarioRol, UsuarioRolDTO>();
+            //CreateMap<UsuarioRolDTO, UsuarioRol>();
+            //CreateMap<UsuarioRol, UsuarioRolPostDTO>();
+            //CreateMap<UsuarioRolPostDTO, UsuarioRol>();
 
         }
     }
