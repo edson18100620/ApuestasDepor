@@ -7,7 +7,7 @@ namespace ApuestasDepor.DOMAIN.Infrastructure.Repositories
 {
     public class UsuarioRolRepository 
     {
-        private readonly ApuestasV2Context _context;
+        //private readonly ApuestasV2Context _context;
         //public UsuarioRolRepository(ApuestasV2Context context)
         //{
         //    _context = context;

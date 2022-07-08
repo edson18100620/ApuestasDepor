@@ -34,8 +34,9 @@ namespace Apuestas.API.Controllers
         [HttpPost("Create")]
         public async Task<IActionResult> Create([FromBody] UsuarioPostDTO usuarioDTO)
         {
-            usuarioDTO.RolId = 4;
+            //usuarioDTO.RolId = 4;
             var usuario = _mapper.Map<Usuario>(usuarioDTO);
+            usuario.RolId = 4;
             await _usuarioRepository.Insert(usuario);
             return Ok(usuario.Id);
         }
@@ -51,7 +52,7 @@ namespace Apuestas.API.Controllers
             return Ok(usuario.Id);
         }
         [HttpDelete("Delete")]
-        public async Task<IActionResult> DeleteById([FromQuery] int id)
+        public async Task<IActionResult> Delete([FromQuery] int id)
         {
             bool result = await _usuarioRepository.Delete(id);
             if (!result)
